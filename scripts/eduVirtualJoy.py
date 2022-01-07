@@ -190,6 +190,8 @@ class EduVirtualJoy:
             coordsHelpText = [self._surface.get_width() - 110, 10]
             self.renderText("e: enable", coordsHelpText, 16, (0, 0, 0), 1)
             coordsHelpText[1] += 25
+            self.renderText("0: disable", coordsHelpText, 16, (0, 0, 0), 1)
+            coordsHelpText[1] += 25
             self.renderText("[1-6]: lighting", coordsHelpText, 16, (0, 0, 0), 1)
             coordsHelpText[1] += 25
             textThrottle = "{:.1f}".format(round(self._throttle,1))
