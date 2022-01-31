@@ -12,7 +12,7 @@ export ROS_IP=<HOST_IP>
 ```
 Launch the virtual joy node as follows:
 ```console
-python3 src/iotbot_virtual_joy/scripts/iotbot_virtual_joy_node.py
+python3 src/edu_virtual_joy/scripts/edu_virtual_joy_node.py
 ```
 This will provide the skid steering concept. Translation to the left and right side will be disabled, since the drives are seriously strained, if no mecanum wheels are mounted.
 
