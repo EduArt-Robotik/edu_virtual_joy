@@ -45,7 +45,7 @@ The key mapping can be found in the following table:
 | 5      | Rotational light     |
 | 6      | Running light        |
 
-**Important:** Three conditions must be met before the robot moves. First, the emergency stop must not be pressed. Second, the charger must not be connected. And third, the enable bit must be set.
+**Important:** Three conditions must be met before the robot moves. First, the stop button must not be pressed. Second, the charger must not be connected. And third, the enable bit must be set.
 
 ## Display of sensor information
 This GUI visualizes some of the sensor information the robot provides. One can see the four distance measurements, which are integrated in the lighting concept. Additionally, the rotational speed of all wheels are given.
