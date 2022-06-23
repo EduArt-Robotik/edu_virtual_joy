@@ -96,10 +96,11 @@ class EduVirtualJoy:
         self._tof_rear_right  = data.data[3]
 
     def callback_rpm(self, data):
-        self._rpm[0]  = data.data[0]
-        self._rpm[1]  = data.data[1]
-        self._rpm[2]  = data.data[2]
-        self._rpm[3]  = data.data[3]
+        motorCnt = len(data.data)
+        if(motorCnt>4):
+            motorCnt=4
+        for i in range(0, motorCnt):
+            self._rpm[i]  = data.data[i]
 
     def run(self):
         pub = rospy.Publisher('joy', Joy, queue_size=1)
