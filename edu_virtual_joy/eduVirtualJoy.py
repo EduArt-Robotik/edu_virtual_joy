@@ -64,7 +64,15 @@ class EduVirtualJoy(Node):
         self._throttle        = 0.3
         self._sub_rpm         = self.create_subscription(RotationSpeed, topic_namespace + '/rpm', self.callback_rpm, 2)
         self._rpm             = [0, 0, 0, 0]
-        self._pub             = self.create_publisher(Joy, '/joy', qos_profile=qos.qos_profile_system_default)
+
+        profile = qos.QoSProfile(
+            depth=2,
+            reliability=qos.ReliabilityPolicy.RELIABLE,
+            history=qos.HistoryPolicy.KEEP_LAST,
+            durability=qos.DurabilityPolicy.VOLATILE
+        )
+        profile.depth = 2
+        self._pub             = self.create_publisher(Joy, '/joy', qos_profile=profile)
 
 
         # main method is called by timer, rate = 10 Hz
@@ -119,7 +127,7 @@ class EduVirtualJoy(Node):
         joyMsg.axes.append(0) # Axis backward/forward
         joyMsg.axes.append(0) # Axis turn left/right
         joyMsg.axes.append(self._throttle-1.0) # Throttle
-        for i in range(12):
+        for i in range(14):
             joyMsg.buttons.append(0)
 
         for event in pygame.event.get():
@@ -156,8 +164,10 @@ class EduVirtualJoy(Node):
         joyMsg.buttons[7] = keys[pygame.K_8]
         joyMsg.buttons[8] = keys[pygame.K_9]
         joyMsg.buttons[9] = keys[pygame.K_0]
-        joyMsg.buttons[10] = keys[pygame.K_e]
-        joyMsg.buttons[11] = self._mecanum
+        joyMsg.buttons[10] = 0
+        joyMsg.buttons[11] = 0
+        joyMsg.buttons[12] = keys[pygame.K_e]
+        joyMsg.buttons[13] = self._mecanum
         self._pub.publish(joyMsg)
 
         white = Color('white')
