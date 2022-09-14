@@ -8,6 +8,8 @@ from rclpy.node import Node
 from rclpy.node import Rate
 from rclpy import qos
 from sensor_msgs.msg import Joy
+from iotbot_interface.msg import Battery
+from iotbot_interface.msg import RotationSpeed
 from std_msgs.msg import Float32
 from std_msgs.msg import Float32MultiArray
 
@@ -35,8 +37,10 @@ class EduVirtualJoy(Node):
         pygame.display.set_caption("EduArt Virtual Joystick")
         pygame.display.set_icon(logo)
 
+        topic_namespace       = "iotbot"
         self.declare_parameter("mecanum", 0)
-        self._mecanum         = self.get_parameter("mecanum")
+        self._mecanum         = self.get_parameter("mecanum").get_parameter_value().integer_value
+
         if self._mecanum == 1:
             path_robot        = os.path.join(os.path.dirname(__file__), image_path + "iotbot_mecanum_top_vga.png")
         else:
@@ -51,16 +55,16 @@ class EduVirtualJoy(Node):
         self._arrow_curved    = pygame.image.load(path_arrow_curved)
 
         self._voltage         = 0
-        self._sub_voltage     = self.create_subscription(Float32, '/voltage', self.callback_voltage, 2)
+        self._sub_voltage     = self.create_subscription(Battery, topic_namespace + '/battery', self.callback_voltage, 2)
         self._tof_front_left  = 0
         self._tof_front_right = 0
         self._tof_rear_left   = 0
         self._tof_rear_right  = 0
-        self._sub_tof         = self.create_subscription(Float32MultiArray, '/tof', self.callback_tof, 2)
+        self._sub_tof         = self.create_subscription(Float32MultiArray, topic_namespace + '/tof', self.callback_tof, 2)
         self._throttle        = 0.3
-        self._sub_rpm         = self.create_subscription(Float32MultiArray, '/rpm', self.callback_rpm, 2)
+        self._sub_rpm         = self.create_subscription(RotationSpeed, topic_namespace + '/rpm', self.callback_rpm, 2)
         self._rpm             = [0, 0, 0, 0]
-        self._pub             = self.create_publisher(Joy, 'joy', qos_profile=qos.qos_profile_system_default)
+        self._pub             = self.create_publisher(Joy, '/joy', qos_profile=qos.qos_profile_system_default)
 
 
         # main method is called by timer, rate = 10 Hz
@@ -94,7 +98,7 @@ class EduVirtualJoy(Node):
         self.renderText(str(int(rpm))+" U/min", rectRPM, 16, rgb)
 
     def callback_voltage(self, data):
-        self._voltage = data.data
+        self._voltage = data.voltage
 
     def callback_tof(self, data):
         self._tof_front_left  = data.data[0]
@@ -103,11 +107,10 @@ class EduVirtualJoy(Node):
         self._tof_rear_right  = data.data[3]
 
     def callback_rpm(self, data):
-        motorCnt = len(data.data)
-        if(motorCnt>4):
-            motorCnt=4
-        for i in range(0, motorCnt):
-            self._rpm[i]  = data.data[i]
+        self._rpm[0]  = data.front_left_rpm
+        self._rpm[1]  = data.front_right_rpm
+        self._rpm[2]  = data.rear_left_rpm
+        self._rpm[3]  = data.rear_right_rpm
 
     def process(self):
         joyMsg = Joy()
@@ -154,7 +157,7 @@ class EduVirtualJoy(Node):
         joyMsg.buttons[8] = keys[pygame.K_9]
         joyMsg.buttons[9] = keys[pygame.K_0]
         joyMsg.buttons[10] = keys[pygame.K_e]
-        joyMsg.buttons[11] = int(self._mecanum.value)
+        joyMsg.buttons[11] = self._mecanum
         self._pub.publish(joyMsg)
 
         white = Color('white')
