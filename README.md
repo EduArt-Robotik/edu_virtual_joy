@@ -4,7 +4,7 @@ This package comprises a ROS2 joy interface for a keyboard steering concept. Ins
 ```console
 sudo apt install python3-pygame
 ```
-Additonially the ROS2 iotbot package, especially the iotbot_interface needs to be available on target system.
+Additionally the ROS2 iotbot package, especially the iotbot_interface needs to be available on target system.
 After the virtual joy packages was build and installed, it can be started by
 
 ```console
