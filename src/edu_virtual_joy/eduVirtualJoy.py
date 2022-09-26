@@ -21,9 +21,9 @@ class EduVirtualJoy:
         pygame.init()
 
         self._surface         = pygame.display.set_mode(_size, pygame.HWSURFACE | pygame.DOUBLEBUF)
-
-        path_logo             = os.path.join(os.path.dirname(__file__), "../images/Logo_A_32.png")
-        path_eduart           = os.path.join(os.path.dirname(__file__), "../images/Logo_Edu_100.png")
+        image_directory       = "../../../../share/edu_virtual_joy/images/"
+        path_logo             = os.path.join(os.path.dirname(__file__), image_directory + "Logo_A_32.png")
+        path_eduart           = os.path.join(os.path.dirname(__file__), image_directory + "Logo_Edu_100.png")
         logo                  = pygame.image.load(path_logo)
         self._eduart          = pygame.image.load(path_eduart)
         self._eduart          = self._eduart.convert_alpha()
@@ -32,11 +32,11 @@ class EduVirtualJoy:
 
         self._mecanum         = rospy.get_param("~mecanum", 0)
         if self._mecanum == 1:
-            path_robot        = os.path.join(os.path.dirname(__file__), "../images/iotbot_mecanum_top_vga.png")
+            path_robot        = os.path.join(os.path.dirname(__file__), image_directory + "iotbot_mecanum_top_vga.png")
         else:
-            path_robot        = os.path.join(os.path.dirname(__file__), "../images/iotbot_offroad_top_vga.png")
-        path_arrow_straight   = os.path.join(os.path.dirname(__file__), "../images/arrow_straight_small.png")
-        path_arrow_curved     = os.path.join(os.path.dirname(__file__), "../images/arrow_curved_small.png")
+            path_robot        = os.path.join(os.path.dirname(__file__), image_directory + "iotbot_offroad_top_vga.png")
+        path_arrow_straight   = os.path.join(os.path.dirname(__file__), image_directory + "arrow_straight_small.png")
+        path_arrow_curved     = os.path.join(os.path.dirname(__file__), image_directory + "arrow_curved_small.png")
         self._robot           = pygame.image.load(path_robot)
         self._arrow_front     = pygame.image.load(path_arrow_straight)
         self._arrow_back      = pygame.transform.rotozoom(self._arrow_front, 180.0, 1.0)
