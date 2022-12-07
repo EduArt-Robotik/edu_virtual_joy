@@ -54,6 +54,7 @@ class EduVirtualJoy:
         self._throttle        = 0.3
         self._sub_rpm         = rospy.Subscriber("/rpm", Float32MultiArray, self.callback_rpm)
         self._rpm             = [0, 0, 0, 0]
+        self._channel_wheels  = [0, 1, 2, 3] #front right, back right, front left, back left
         try:
             self.run()
         except rospy.ROSInterruptException:
@@ -206,11 +207,15 @@ class EduVirtualJoy:
             self.renderTofDistance(self._tof_front_right, self._surface.get_width()/2+80, 30, "d2")
             self.renderTofDistance(self._tof_rear_left,  self._surface.get_width()/2-80, self._surface.get_height()-30, "d3")
             self.renderTofDistance(self._tof_rear_right, self._surface.get_width()/2+80, self._surface.get_height()-30, "d4")
-
-            self.renderRPM(self._rpm[0], self._surface.get_width()/2+260, self._surface.get_height()-100)
-            self.renderRPM(self._rpm[1], self._surface.get_width()/2+260, 120)
-            self.renderRPM(self._rpm[2], self._surface.get_width()/2-260, self._surface.get_height()-100)
-            self.renderRPM(self._rpm[3], self._surface.get_width()/2-260, 120)
+            
+            # front right
+            self.renderRPM(self._rpm[self._channel_wheels[0]], self._surface.get_width()/2+260, self._surface.get_height()-100)
+            # back right
+            self.renderRPM(self._rpm[self._channel_wheels[1]], self._surface.get_width()/2+260, 120)
+            # front left
+            self.renderRPM(self._rpm[self._channel_wheels[2]], self._surface.get_width()/2-260, self._surface.get_height()-100)
+            # back left
+            self.renderRPM(self._rpm[self._channel_wheels[3]], self._surface.get_width()/2-260, 120)
 
             pygame.display.update()
             rate.sleep()
