@@ -50,10 +50,10 @@ class EduVirtualJoyRosNode():
     rclpy.shutdown()
 
   def register_feedback_callback(self, callback):
-     self.callback_feedback.append(callback)
+    self.callback_feedback.append(callback)
 
   def remove_feedback_callback(self, callback):
-     self.callback_feedback.remove(callback)
+    self.callback_feedback.remove(callback)
 
   def set_mode_robot(self, mode) -> None:
     print('try to set robot mode')
@@ -80,20 +80,11 @@ class EduVirtualJoyRosNode():
     future = self.srv_set_mode.call_async(set_mode_request)
 
   def callback_status_report(self, msg):
-    print('received robot status report')
     for callback in self.callback_feedback:
        callback(msg)
 
 
 class EduVirtualJoyWebApp(ft.UserControl):
-  def __del__(self):
-    print("destructor called")
-    EduVirtualJoyRosNode().remove_feedback_callback(self.process_robot_feedback)
-
-  def will_unmount(self):
-    print("will unmount called")
-    EduVirtualJoyRosNode().remove_feedback_callback(self.process_robot_feedback)
-
   def build(self):
     # create input control group switch robot mode
     self.remote_button = ft.ElevatedButton(
@@ -206,6 +197,8 @@ def main(page: ft.Page):
   page.vertical_alignment = ft.MainAxisAlignment.CENTER
   page.update()
 
-  page.add(EduVirtualJoyWebApp())
+  user_control = EduVirtualJoyWebApp()
+  page.add(user_control)
+  page.on_disconnect = lambda e: EduVirtualJoyRosNode().remove_feedback_callback(user_control.process_robot_feedback)
 
 ft.app(main, view=ft.AppView.WEB_BROWSER, port=8888)
