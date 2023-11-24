@@ -1,7 +1,9 @@
 import flet as ft
+import flet.canvas as cv
 
 from functools import partial
 from threading import Thread
+import math
 
 import rclpy
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
@@ -84,6 +86,77 @@ class EduVirtualJoyRosNode():
        callback(msg)
 
 
+class JoyStickWidget(ft.UserControl):
+  def resizing(self, e):
+    print('resizing')
+    print(e)
+    self.widget.shapes[0].x = e.width / 2
+    self.widget.shapes[0].y = e.height / 2
+    self.widget.shapes[1].x = e.width / 2
+    self.widget.shapes[1].y = e.height / 2
+
+    self.widget.width = e.width
+    self.widget.height = e.width
+
+    self.widget.update()
+
+  def on_user_input(self, e):
+    print('e.local_x = ', e.local_x)
+    print('e.local_y = ', e.local_y)
+    width = self.widget.width
+    height = self.widget.height
+    x = e.local_x - width / 2
+    y = e.local_y - height / 2
+    length = math.sqrt(x * x + y * y)
+    print('length = ', length)
+
+    if length > self.size / 2 - self.dot_radius:
+      factor = (self.size / 2 - self.dot_radius) / float(length)
+      x = float(x) * factor
+      y = float(y) * factor
+
+    print('x = ', x)
+    print('y = ', y)
+    self.x = x / float(self.size / 2)
+    self.y = y / float(self.size / 2)
+
+    self.widget.shapes[0].x = x + width / 2
+    self.widget.shapes[0].y = y + height / 2
+    self.widget.update()
+
+  def on_user_input_release(self, e):
+    self.widget.shapes[0].x = self.widget.width / 2
+    self.widget.shapes[0].y = self.widget.height / 2
+    self.widget.update()  
+
+  def build(self):
+    self.size = 300
+    self.dot_radius = 30
+    self.x = 0.0
+    self.y = 0.0
+    self.widget = cv.Canvas([
+        cv.Circle(radius=self.dot_radius, paint=ft.Paint(color=ft.colors.RED)),
+        cv.Circle(radius=self.size / 2, paint=ft.Paint(color=ft.colors.BLACK38))
+      ],
+      on_resize=self.resizing,
+      width=self.size,  # size must be squared
+      height=self.size,
+      content=ft.GestureDetector(
+        on_pan_update=self.on_user_input,
+        on_pan_end=self.on_user_input_release,
+        # on_tap_down=self.on_user_input,
+        on_tap_up=self.on_user_input_release,
+        on_exit=self.on_user_input_release,
+        on_long_press_end=self.on_user_input_release,
+        drag_interval=20
+      )
+    )
+
+    return self.widget
+
+  def value(self):
+    return [self.x, self.y]
+
 class EduVirtualJoyWebApp(ft.UserControl):
   def build(self):
     # create input control group switch robot mode
@@ -114,13 +187,17 @@ class EduVirtualJoyWebApp(ft.UserControl):
       ],
       alignment=ft.MainAxisAlignment.CENTER
     )
-    
+
+    # create joysticks
+    joystick_left = JoyStickWidget()
+
     # register callback for receiving robot status reports
     EduVirtualJoyRosNode().register_feedback_callback(self.process_robot_feedback)
 
     return ft.Column([
       group_select_kinematic,
-      group_switch_mode
+      group_switch_mode,
+      joystick_left
     ])
 
   def process_robot_feedback(self, status_report : RobotStatusReport):
