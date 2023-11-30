@@ -38,15 +38,15 @@ class EduVirtualJoyWebApp(ft.UserControl):
     )
 
     # create joysticks
-    joystick_left = JoyStickControl()
+    joystick_left  = JoyStickControl()
     joystick_right = JoyStickControl()
 
     # create Eduard status display
-    eduard_status_display = EduardStatusReportDisplay()
+    self.eduard_status_display = EduardStatusReportDisplay()
 
     group_joy_and_status = ft.Row([
         joystick_left,
-        eduard_status_display,
+        self.eduard_status_display,
         joystick_right
       ],
       alignment=ft.MainAxisAlignment.CENTER
@@ -122,9 +122,11 @@ class EduVirtualJoyWebApp(ft.UserControl):
     if status_report.robot_state.mode.drive_kinematic is Mode.SKID_DRIVE:
       self.select_skip_drive.disabled = True
       self.select_mecanum.disabled = False
+      self.eduard_status_display.show_offroad()
     elif status_report.robot_state.mode.drive_kinematic is Mode.MECANUM_DRIVE:
       self.select_skip_drive.disabled = False
       self.select_mecanum.disabled = True
+      self.eduard_status_display.show_mecanum()
 
     self.select_skip_drive.update()
     self.select_mecanum.update()

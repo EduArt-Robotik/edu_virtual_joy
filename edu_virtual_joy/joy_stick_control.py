@@ -18,24 +18,21 @@ class JoyStickControl(ft.UserControl):
     self.canvas.update()
 
   def on_user_input(self, e):
-    print('e.local_x = ', e.local_x)
-    print('e.local_y = ', e.local_y)
     width = self.canvas.width
     height = self.canvas.height
     x = e.local_x - width / 2
     y = e.local_y - height / 2
     length = math.sqrt(x * x + y * y)
-    print('length = ', length)
 
     if length > self.size / 2 - self.dot_radius:
       factor = (self.size / 2 - self.dot_radius) / float(length)
       x = float(x) * factor
       y = float(y) * factor
 
-    print('x = ', x)
-    print('y = ', y)
     self.x = x / float(self.size / 2)
     self.y = y / float(self.size / 2)
+    print('x = ', x)
+    print('y = ', y)
 
     self.canvas.shapes[0].x = x + width / 2
     self.canvas.shapes[0].y = y + height / 2
