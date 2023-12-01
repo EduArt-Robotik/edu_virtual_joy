@@ -1,12 +1,24 @@
 import flet as ft
 
-from edu_virtual_joy_ros_node import EduVirtualJoyRosNode
+from edu_virtual_joy_ros_node import EduVirtualJoyRosNode, RangeSensor
 from joy_stick_control import JoyStickControl
 from eduard_status_display import EduardStatusReportDisplay
 
 from edu_robot.msg import Mode, RobotStatusReport
 
 class EduVirtualJoyWebApp(ft.UserControl):
+  def initialize(self):
+    # register callbacks for receiving robot status reports, sensor data
+    EduVirtualJoyRosNode().register_feedback_callback(self.process_robot_feedback)
+    EduVirtualJoyRosNode().register_range_sensor_callback(
+      self.eduard_status_display.set_distance, RangeSensor.FrontLeft)
+    EduVirtualJoyRosNode().register_range_sensor_callback(
+      self.eduard_status_display.set_distance, RangeSensor.FrontRight)
+    EduVirtualJoyRosNode().register_range_sensor_callback(
+      self.eduard_status_display.set_distance, RangeSensor.RearLeft)
+    EduVirtualJoyRosNode().register_range_sensor_callback(
+      self.eduard_status_display.set_distance, RangeSensor.RearRight)   
+
   def build(self):
     # create input control group switch robot mode
     self.remote_button = ft.ElevatedButton(
@@ -51,9 +63,6 @@ class EduVirtualJoyWebApp(ft.UserControl):
       ],
       alignment=ft.MainAxisAlignment.CENTER
     )
-
-    # register callback for receiving robot status reports
-    EduVirtualJoyRosNode().register_feedback_callback(self.process_robot_feedback)
 
     return ft.Column([
       group_joy_and_status,
@@ -139,6 +148,17 @@ def main(page: ft.Page):
 
   user_control = EduVirtualJoyWebApp()
   page.add(user_control)
-  page.on_disconnect = lambda e: EduVirtualJoyRosNode().remove_feedback_callback(user_control.process_robot_feedback)
+  page.on_disconnect = lambda e: (
+    EduVirtualJoyRosNode().remove_feedback_callback(user_control.process_robot_feedback),
+    EduVirtualJoyRosNode().remove_range_sensor_callback(
+      user_control.eduard_status_display.set_distance, RangeSensor.FrontLeft),
+    EduVirtualJoyRosNode().remove_range_sensor_callback(
+      user_control.eduard_status_display.set_distance, RangeSensor.FrontRight),
+    EduVirtualJoyRosNode().remove_range_sensor_callback(
+      user_control.eduard_status_display.set_distance, RangeSensor.RearLeft),
+    EduVirtualJoyRosNode().remove_range_sensor_callback(
+      user_control.eduard_status_display.set_distance, RangeSensor.RearRight)
+  )
+  user_control.initialize()
 
 ft.app(main, view=ft.AppView.WEB_BROWSER, port=8888, assets_dir="assets")

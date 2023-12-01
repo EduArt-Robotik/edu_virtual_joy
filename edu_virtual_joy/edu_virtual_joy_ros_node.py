@@ -1,10 +1,21 @@
 import rclpy
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from geometry_msgs.msg import Twist
+from sensor_msgs.msg import Range
+
 from edu_robot.srv import SetMode
 from edu_robot.msg import Mode, SetLightingColor, RobotStatusReport
 
 from threading import Thread
+from functools import partial
+from enum import IntEnum
+
+class RangeSensor(IntEnum):
+  FrontLeft = 0
+  FrontRight = 1
+  RearLeft = 2
+  RearRight = 3
+  NumSensors = 4
 
 class EduVirtualJoyRosNode():
   _instance = None
@@ -24,7 +35,13 @@ class EduVirtualJoyRosNode():
 
     self.ros_thread = Thread(target=self.ros_thread_process)
     self.ros_thread.start()
+
     self.callback_feedback = []
+    self.callbacks_range_sensor = []
+    self.callbacks_range_sensor.append([])
+    self.callbacks_range_sensor.append([])
+    self.callbacks_range_sensor.append([])
+    self.callbacks_range_sensor.append([])        
 
   def ros_thread_process(self):
     print('launching ros thread')
@@ -34,9 +51,40 @@ class EduVirtualJoyRosNode():
       RobotStatusReport, '/eduard/blue/status_report', self.callback_status_report, QoSProfile(
         reliability=QoSReliabilityPolicy.BEST_EFFORT,
         history=QoSHistoryPolicy.KEEP_LAST,
-        depth=100
+        depth=2
       )
     )
+
+    self.sub_range = []
+    self.sub_range.append(self.node.create_subscription(
+      Range, '/eduard/blue/range/front/left/range', lambda msg: EduVirtualJoyRosNode().callback_range_sensor(msg, RangeSensor.FrontLeft), QoSProfile(
+        reliability=QoSReliabilityPolicy.BEST_EFFORT,
+        history=QoSHistoryPolicy.KEEP_LAST,
+        depth=2
+      )      
+    ))
+    self.sub_range.append(self.node.create_subscription(
+      Range, '/eduard/blue/range/front/right/range', lambda msg: EduVirtualJoyRosNode().callback_range_sensor(msg, RangeSensor.FrontRight), QoSProfile(
+        reliability=QoSReliabilityPolicy.BEST_EFFORT,
+        history=QoSHistoryPolicy.KEEP_LAST,
+        depth=2
+      )      
+    ))
+    self.sub_range.append(self.node.create_subscription(
+      Range, '/eduard/blue/range/rear/left/range', lambda msg: EduVirtualJoyRosNode().callback_range_sensor(msg, RangeSensor.RearLeft), QoSProfile(
+        reliability=QoSReliabilityPolicy.BEST_EFFORT,
+        history=QoSHistoryPolicy.KEEP_LAST,
+        depth=2
+      )      
+    ))
+    self.sub_range.append(self.node.create_subscription(
+      Range, '/eduard/blue/range/rear/right/range', lambda msg: EduVirtualJoyRosNode().callback_range_sensor(msg, RangeSensor.RearRight), QoSProfile(
+        reliability=QoSReliabilityPolicy.BEST_EFFORT,
+        history=QoSHistoryPolicy.KEEP_LAST,
+        depth=2
+      )
+    ))
+
     self.pub_velocity = self.node.create_publisher(Twist, '/eduard/blue/cmd_vel', 1)
     self.pub_set_lighting = self.node.create_publisher(SetLightingColor, '/eduard/blue/set_lighting_color', 1)
     self.velocity_cmd = Twist()
@@ -51,6 +99,12 @@ class EduVirtualJoyRosNode():
 
   def remove_feedback_callback(self, callback):
     self.callback_feedback.remove(callback)
+
+  def register_range_sensor_callback(self, callback, sensor_index : RangeSensor):
+    self.callbacks_range_sensor[int(sensor_index)].append(callback)
+
+  def remove_range_sensor_callback(self, callback, sensor_index : RangeSensor):
+    self.callbacks_range_sensor[int(sensor_index)].remove(callback)
 
   def set_mode_robot(self, mode) -> None:
     print('try to set robot mode')
@@ -79,3 +133,7 @@ class EduVirtualJoyRosNode():
   def callback_status_report(self, msg):
     for callback in self.callback_feedback:
        callback(msg)
+
+  def callback_range_sensor(self, msg, index : RangeSensor):
+    for callback in self.callbacks_range_sensor[int(index)]:
+      callback(msg, index)
