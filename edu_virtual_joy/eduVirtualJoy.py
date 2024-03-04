@@ -8,8 +8,8 @@ from rclpy.node import Node
 from rclpy.node import Rate
 from rclpy import qos
 from sensor_msgs.msg import Joy
-from iotbot_interface.msg import Battery
-from iotbot_interface.msg import RotationSpeed
+# from iotbot_interface.msg import Battery
+# from iotbot_interface.msg import RotationSpeed
 from std_msgs.msg import Float32
 from std_msgs.msg import Float32MultiArray
 
@@ -28,7 +28,7 @@ class EduVirtualJoy(Node):
 
         self._surface         = pygame.display.set_mode(_size, pygame.HWSURFACE | pygame.DOUBLEBUF)
 
-        image_path            = '../../../../share/edu_virtual_joy/images/'
+        image_path            = 'assets/images/'
         path_logo             = os.path.join(os.path.dirname(__file__), image_path + "Logo_A_32.png")
         path_eduart           = os.path.join(os.path.dirname(__file__), image_path + "Logo_Edu_100.png")
         logo                  = pygame.image.load(path_logo)
@@ -42,9 +42,9 @@ class EduVirtualJoy(Node):
         self._mecanum         = self.get_parameter("mecanum").get_parameter_value().integer_value
 
         if self._mecanum == 1:
-            path_robot        = os.path.join(os.path.dirname(__file__), image_path + "iotbot_mecanum_top_vga.png")
+            path_robot        = os.path.join(os.path.dirname(__file__), image_path + "eduard_mecanum_top.png")
         else:
-            path_robot        = os.path.join(os.path.dirname(__file__), image_path + "iotbot_offroad_top_vga.png")
+            path_robot        = os.path.join(os.path.dirname(__file__), image_path + "eduard_offroad_top.png")
         path_arrow_straight   = os.path.join(os.path.dirname(__file__), image_path + "arrow_straight_small.png")
         path_arrow_curved     = os.path.join(os.path.dirname(__file__), image_path + "arrow_curved_small.png")
         self._robot           = pygame.image.load(path_robot)
@@ -55,14 +55,14 @@ class EduVirtualJoy(Node):
         self._arrow_curved    = pygame.image.load(path_arrow_curved)
 
         self._voltage         = 0
-        self._sub_voltage     = self.create_subscription(Battery, topic_namespace + '/battery', self.callback_voltage, 2)
+        # self._sub_voltage     = self.create_subscription(Battery, topic_namespace + '/battery', self.callback_voltage, 2)
         self._tof_front_left  = 0
         self._tof_front_right = 0
         self._tof_rear_left   = 0
         self._tof_rear_right  = 0
         self._sub_tof         = self.create_subscription(Float32MultiArray, topic_namespace + '/tof', self.callback_tof, 2)
         self._throttle        = 0.3
-        self._sub_rpm         = self.create_subscription(RotationSpeed, topic_namespace + '/rpm', self.callback_rpm, 2)
+        # self._sub_rpm         = self.create_subscription(RotationSpeed, topic_namespace + '/rpm', self.callback_rpm, 2)
         self._rpm             = [0, 0, 0, 0]
 
         profile = qos.QoSProfile(

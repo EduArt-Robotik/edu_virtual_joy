@@ -1,5 +1,7 @@
 import flet as ft
 
+import math
+
 from edu_virtual_joy_ros_node import EduVirtualJoyRosNode, RangeSensor
 from joy_stick_control import JoyStickControl
 from eduard_status_display import EduardStatusReportDisplay
@@ -17,7 +19,8 @@ class EduVirtualJoyWebApp(ft.UserControl):
     EduVirtualJoyRosNode().register_range_sensor_callback(
       self.eduard_status_display.set_distance, RangeSensor.RearLeft)
     EduVirtualJoyRosNode().register_range_sensor_callback(
-      self.eduard_status_display.set_distance, RangeSensor.RearRight)   
+      self.eduard_status_display.set_distance, RangeSensor.RearRight)
+    EduVirtualJoyRosNode().register_get_velocity_callback(self.get_velocity)
 
   def build(self):
     # create input control group switch robot mode
@@ -50,16 +53,16 @@ class EduVirtualJoyWebApp(ft.UserControl):
     )
 
     # create joysticks
-    joystick_left  = JoyStickControl()
-    joystick_right = JoyStickControl()
+    self.joystick_left  = JoyStickControl()
+    self.joystick_right = JoyStickControl()
 
     # create Eduard status display
     self.eduard_status_display = EduardStatusReportDisplay()
 
     group_joy_and_status = ft.Row([
-        joystick_left,
+        self.joystick_left,
         self.eduard_status_display,
-        joystick_right
+        self.joystick_right
       ],
       alignment=ft.MainAxisAlignment.CENTER
     )
@@ -69,6 +72,11 @@ class EduVirtualJoyWebApp(ft.UserControl):
       group_select_kinematic,
       group_switch_mode,
     ])
+
+  def get_velocity(self):
+    return [ self.joystick_left.get_relative_position()[1] * -1.5,
+             self.joystick_left.get_relative_position()[0] * -1.5,
+             self.joystick_right.get_relative_position()[0] * -math.pi ]
 
   def process_robot_feedback(self, status_report : RobotStatusReport):
     print('process robot status report')
@@ -157,7 +165,9 @@ def main(page: ft.Page):
     EduVirtualJoyRosNode().remove_range_sensor_callback(
       user_control.eduard_status_display.set_distance, RangeSensor.RearLeft),
     EduVirtualJoyRosNode().remove_range_sensor_callback(
-      user_control.eduard_status_display.set_distance, RangeSensor.RearRight)
+      user_control.eduard_status_display.set_distance, RangeSensor.RearRight),
+    EduVirtualJoyRosNode().remove_get_velocity_callback(
+      user_control.get_velocity)
   )
   user_control.initialize()
 

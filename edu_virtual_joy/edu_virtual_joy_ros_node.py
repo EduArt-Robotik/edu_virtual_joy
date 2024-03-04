@@ -1,5 +1,6 @@
 import rclpy
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
+from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Range
 
@@ -41,7 +42,9 @@ class EduVirtualJoyRosNode():
     self.callbacks_range_sensor.append([])
     self.callbacks_range_sensor.append([])
     self.callbacks_range_sensor.append([])
-    self.callbacks_range_sensor.append([])        
+    self.callbacks_range_sensor.append([])
+
+    self.callback_velocity = [] 
 
   def ros_thread_process(self):
     print('launching ros thread')
@@ -89,6 +92,8 @@ class EduVirtualJoyRosNode():
     self.pub_set_lighting = self.node.create_publisher(SetLightingColor, '/eduard/blue/set_lighting_color', 1)
     self.velocity_cmd = Twist()
     self.srv_set_mode = self.node.create_client(SetMode, '/eduard/blue/set_mode')
+    self.timer_set_velocity = self.node.create_timer(0.1, self.set_velocity)
+
     print("start spinning node")
     rclpy.spin(self.node)
     self.node.destroy_node()
@@ -105,6 +110,12 @@ class EduVirtualJoyRosNode():
 
   def remove_range_sensor_callback(self, callback, sensor_index : RangeSensor):
     self.callbacks_range_sensor[int(sensor_index)].remove(callback)
+
+  def register_get_velocity_callback(self, callback):
+    self.callback_velocity.append(callback)
+
+  def remove_get_velocity_callback(self, callback):
+    self.callback_velocity.remove(callback)
 
   def set_mode_robot(self, mode) -> None:
     print('try to set robot mode')
@@ -129,6 +140,26 @@ class EduVirtualJoyRosNode():
         return
 
     future = self.srv_set_mode.call_async(set_mode_request)
+
+  def set_velocity(self):
+    if len(self.callback_velocity) == 0:
+      return
+
+    # Add all velocities together. TODO: allow only one at same time
+    velocity = [0.0, 0.0, 0.0]
+
+    for callback in self.callback_velocity:
+      value = callback()
+      velocity[0] = velocity[0] + value[0]
+      velocity[1] = velocity[1] + value[1]
+      velocity[2] = velocity[2] + value[2]
+
+    twist_msg = Twist()
+    twist_msg.linear.x  = velocity[0]
+    twist_msg.linear.y  = velocity[1]
+    twist_msg.angular.z = velocity[2]
+
+    self.pub_velocity.publish(twist_msg)
 
   def callback_status_report(self, msg):
     for callback in self.callback_feedback:

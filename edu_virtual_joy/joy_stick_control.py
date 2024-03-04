@@ -18,6 +18,7 @@ class JoyStickControl(ft.UserControl):
     self.canvas.update()
 
   def on_user_input(self, e):
+    # TODO: solve bug: size of dot is not respected. Never reaches 1, only 0.8
     width = self.canvas.width
     height = self.canvas.height
     x = e.local_x - width / 2
@@ -31,8 +32,8 @@ class JoyStickControl(ft.UserControl):
 
     self.x = x / float(self.size / 2)
     self.y = y / float(self.size / 2)
-    print('x = ', x)
-    print('y = ', y)
+    # print('x = ', self.x)
+    # print('y = ', self.y)
 
     self.canvas.shapes[0].x = x + width / 2
     self.canvas.shapes[0].y = y + height / 2
@@ -41,7 +42,15 @@ class JoyStickControl(ft.UserControl):
   def on_user_input_release(self, e):
     self.canvas.shapes[0].x = self.canvas.width / 2
     self.canvas.shapes[0].y = self.canvas.height / 2
-    self.canvas.update()  
+    self.canvas.update()
+
+    self.x = 0.0
+    self.y = 0.0
+    # print('x = ', self.x)
+    # print('y = ', self.y)
+
+  def get_relative_position(self):
+    return [ self.x, self.y ]
 
   def build(self):
     self.size = 300
@@ -59,9 +68,9 @@ class JoyStickControl(ft.UserControl):
         on_pan_update=self.on_user_input,
         on_pan_end=self.on_user_input_release,
         # on_tap_down=self.on_user_input,
-        on_tap_up=self.on_user_input_release,
+        # on_tap_up=self.on_user_input_release,
         on_exit=self.on_user_input_release,
-        on_long_press_end=self.on_user_input_release,
+        # on_long_press_end=self.on_user_input_release,
         drag_interval=20
       )
     )
