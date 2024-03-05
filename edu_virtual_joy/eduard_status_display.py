@@ -35,7 +35,8 @@ class RangeSensorDisplay(ft.UserControl):
       (path_height + self.text_size / 2) * distance_scale,
       "{:.2f}m".format(distance),
       ft.TextStyle(weight=ft.FontWeight.NORMAL, size=self.text_size, color=ft.colors.WHITE),
-      alignment=ft.alignment.center
+      alignment=ft.alignment.center,
+      rotate=0.0 if self.top_down else math.pi
     )
     self.canvas.update()
 
@@ -47,29 +48,38 @@ class RangeSensorDisplay(ft.UserControl):
     self.height = 200
 
     distance_scale = self.distance / self.max_distance
+    path_height = self.height - self.text_size
 
     self.canvas = cv.Canvas([
         cv.Path([
             cv.Path.MoveTo(self.width / 2, 0),
             cv.Path.LineTo(
-              math.sin(-self.fov / 2) * self.height * distance_scale + self.width / 2,
-              math.cos(-self.fov / 2) * self.height * distance_scale),
+              math.sin(-self.fov / 2) * path_height * distance_scale + self.width / 2,
+              math.cos(-self.fov / 2) * path_height * distance_scale),
             cv.Path.QuadraticTo(
               self.width / 2,
-              self.height * distance_scale,
-              math.sin(self.fov / 2) * self.height * distance_scale + self.width / 2,
-              math.cos(self.fov / 2) * self.height * distance_scale),
+              path_height * distance_scale,
+              math.sin(self.fov / 2) * path_height * distance_scale + self.width / 2,
+              math.cos(self.fov / 2) * path_height * distance_scale),
             cv.Path.LineTo(self.width / 2, 0)
           ],
           paint=ft.Paint(
             style=ft.PaintingStyle.FILL,
-            color=ft.colors.GREEN
+            color=ft.colors.RED if self.top_down else ft.colors.GREEN
           )
         ),
-        cv.Text(self.width / 2, self.height * distance_scale, str(1.0) + 'm')
+        cv.Text(
+          self.width / 2,
+          (path_height + self.text_size / 2) * distance_scale,
+          "nan",
+          ft.TextStyle(weight=ft.FontWeight.NORMAL, size=self.text_size, color=ft.colors.WHITE),
+          alignment=ft.alignment.center,
+          rotate=0.0 if self.top_down else math.pi
+        )
       ],
       width=self.width,
-      height=self.height
+      height=self.height,
+      rotate=0.0 if self.top_down else math.pi
     )
 
     return self.canvas
@@ -79,8 +89,10 @@ class EduardStatusReportDisplay(ft.UserControl):
     super().__init__()
 
   def build(self):
-    self.distance_front_left = RangeSensorDisplay(top_down=True)
-    self.distance_front_right = RangeSensorDisplay(top_down=True)
+    self.distance_front_left = RangeSensorDisplay(top_down=False)
+    self.distance_front_right = RangeSensorDisplay(top_down=False)
+    self.distance_rear_left = RangeSensorDisplay(top_down=True)
+    self.distance_rear_right = RangeSensorDisplay(top_down=True)
     self.eduard_image = ft.Image(
       # src=f"images/eduard_offroad_top.png",
       src_base64=get_offroad_image(),
@@ -89,14 +101,21 @@ class EduardStatusReportDisplay(ft.UserControl):
       height=300)
     
     return ft.Column([
-      self.eduard_image,
       ft.Row(
         [
           self.distance_front_left,
           self.distance_front_right
         ],
-        alignment=ft.MainAxisAlignment.CENTER
-      )
+        alignment=ft.alignment.center
+      ),
+      self.eduard_image,
+      ft.Row(
+        [
+          self.distance_rear_left,
+          self.distance_rear_right
+        ],
+        alignment=ft.alignment.center
+      )      
     ])
   
   def show_offroad(self):
@@ -116,3 +135,8 @@ class EduardStatusReportDisplay(ft.UserControl):
       self.distance_front_left.set_distance(range_msg.range)
     if sensor_index is RangeSensor.FrontRight:
       self.distance_front_right.set_distance(range_msg.range)
+    if sensor_index is RangeSensor.RearLeft:
+      self.distance_rear_left.set_distance(range_msg.range)
+    if sensor_index is RangeSensor.RearRight:
+      self.distance_rear_right.set_distance(range_msg.range)
+
