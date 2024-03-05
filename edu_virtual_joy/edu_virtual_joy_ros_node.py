@@ -51,7 +51,7 @@ class EduVirtualJoyRosNode():
     rclpy.init(args=None)
     self.node = rclpy.create_node('edu_virtual_joy')
     self.sub_status = self.node.create_subscription(
-      RobotStatusReport, '/eduard/blue/status_report', self.callback_status_report, QoSProfile(
+      RobotStatusReport, 'status_report', self.callback_status_report, QoSProfile(
         reliability=QoSReliabilityPolicy.BEST_EFFORT,
         history=QoSHistoryPolicy.KEEP_LAST,
         depth=2
@@ -60,38 +60,38 @@ class EduVirtualJoyRosNode():
 
     self.sub_range = []
     self.sub_range.append(self.node.create_subscription(
-      Range, '/eduard/blue/range/front/left/range', lambda msg: EduVirtualJoyRosNode().callback_range_sensor(msg, RangeSensor.FrontLeft), QoSProfile(
+      Range, 'range/front/left/range', lambda msg: EduVirtualJoyRosNode().callback_range_sensor(msg, RangeSensor.FrontLeft), QoSProfile(
         reliability=QoSReliabilityPolicy.BEST_EFFORT,
         history=QoSHistoryPolicy.KEEP_LAST,
         depth=2
       )      
     ))
     self.sub_range.append(self.node.create_subscription(
-      Range, '/eduard/blue/range/front/right/range', lambda msg: EduVirtualJoyRosNode().callback_range_sensor(msg, RangeSensor.FrontRight), QoSProfile(
+      Range, 'range/front/right/range', lambda msg: EduVirtualJoyRosNode().callback_range_sensor(msg, RangeSensor.FrontRight), QoSProfile(
         reliability=QoSReliabilityPolicy.BEST_EFFORT,
         history=QoSHistoryPolicy.KEEP_LAST,
         depth=2
       )      
     ))
     self.sub_range.append(self.node.create_subscription(
-      Range, '/eduard/blue/range/rear/left/range', lambda msg: EduVirtualJoyRosNode().callback_range_sensor(msg, RangeSensor.RearLeft), QoSProfile(
+      Range, 'range/rear/left/range', lambda msg: EduVirtualJoyRosNode().callback_range_sensor(msg, RangeSensor.RearLeft), QoSProfile(
         reliability=QoSReliabilityPolicy.BEST_EFFORT,
         history=QoSHistoryPolicy.KEEP_LAST,
         depth=2
       )      
     ))
     self.sub_range.append(self.node.create_subscription(
-      Range, '/eduard/blue/range/rear/right/range', lambda msg: EduVirtualJoyRosNode().callback_range_sensor(msg, RangeSensor.RearRight), QoSProfile(
+      Range, 'range/rear/right/range', lambda msg: EduVirtualJoyRosNode().callback_range_sensor(msg, RangeSensor.RearRight), QoSProfile(
         reliability=QoSReliabilityPolicy.BEST_EFFORT,
         history=QoSHistoryPolicy.KEEP_LAST,
         depth=2
       )
     ))
 
-    self.pub_velocity = self.node.create_publisher(Twist, '/eduard/blue/cmd_vel', 1)
-    self.pub_set_lighting = self.node.create_publisher(SetLightingColor, '/eduard/blue/set_lighting_color', 1)
+    self.pub_velocity = self.node.create_publisher(Twist, 'cmd_vel', 1)
+    self.pub_set_lighting = self.node.create_publisher(SetLightingColor, 'set_lighting_color', 1)
     self.velocity_cmd = Twist()
-    self.srv_set_mode = self.node.create_client(SetMode, '/eduard/blue/set_mode')
+    self.srv_set_mode = self.node.create_client(SetMode, 'set_mode')
     self.timer_set_velocity = self.node.create_timer(0.1, self.set_velocity)
 
     print("start spinning node")
