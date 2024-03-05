@@ -1,18 +1,14 @@
 # edu_virtual_joy
-This package comprises a ROS joy interface for a keyboard steering concept. Install pygame on your host machine in order to launch the virtual joy node:
+This package comprises a ROS2 joy interface for a keyboard steering concept. Install pygame on your host machine in order to launch the virtual joy node:
 
 ```console
 sudo apt install python3-pygame
 ```
+Additionally the ROS2 iotbot package, especially the iotbot_interface needs to be available on target system.
+After the virtual joy packages was build and installed, it can be started by
 
-Ensure to have configured the ROS communication well:
 ```console
-export ROS_MASTER_URI=http://<IP_OF_IOTBOT>:11311
-export ROS_IP=<HOST_IP>
-```
-Launch the virtual joy node as follows:
-```console
-python3 src/edu_virtual_joy/scripts/edu_virtual_joy_node.py
+ros2 run edu_virtual_joy virtual_joy 
 ```
 This will provide the skid steering concept. Translation to the left and right side will be disabled, since the drives are seriously strained, if no mecanum wheels are mounted.
 
@@ -20,7 +16,7 @@ This will provide the skid steering concept. Translation to the left and right s
 
 To enable this feature for mecanum-driven robots, one can add the according parameter as follows:
 ```console
-python3 src/edu_virtual_joy/scripts/edu_virtual_joy_node.py _mecanum:=1
+ros2 run edu_virtual_joy virtual_joy --ros-args -p mecanum:=1
 ```
 <img src="/images/gui_mecanum.png" alt="GUI mecanum steering" width="320"/>
 
