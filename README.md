@@ -18,7 +18,7 @@ git clone https://github.com/EduArt-Robotik/edu_virtual_joy.git
 
 ### Native ROS2 Package
 
-As an alternative to the Docker image, there is an installation as a ROS2 package. This assumes that ROS2 is already installed. If this is not the case, please follow the [ROS Install Instructions](https://docs.ros.org/en/humble/Installation.html).
+As an alternative to the Docker image, there is an installation as a ROS2 package. This assumes that ROS2 is already installed. If this is not the case, please follow the [ROS Install Instructions](https://docs.ros.org/en/jazzy/Installation.html).
 
 Please also make sure that you have "git" installed. If not:
 
@@ -48,10 +48,10 @@ To build the packages you will need "colcon" install this as following:
 sudo apt install python3-colcon-common-extensions
 ```
 
-Also you need the humble diagnostic updater:
+Also you need the jazzy diagnostic updater:
 
 ```bash
-sudo apt install ros-humble-diagnostic-updater
+sudo apt install ros-jazzy-diagnostic-updater
 ```
 
 You can then install **flet** with the following command:
