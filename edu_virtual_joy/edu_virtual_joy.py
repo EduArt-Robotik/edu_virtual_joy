@@ -171,4 +171,4 @@ def main(page: ft.Page):
   )
   user_control.initialize()
 
-ft.app(main, view=ft.AppView.WEB_BROWSER, port=8888, assets_dir="assets")
+ft.app(target=main, view=ft.AppView.WEB_BROWSER, port=8888, assets_dir="assets")
