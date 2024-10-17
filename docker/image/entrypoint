@@ -2,7 +2,7 @@
 
 # Setup ROS 2 environment
 source /home/user/python_env/.flet/bin/activate
-export $PYTHONPATH='/home/user/python_env/.flet/lib/python3.12/site-packages'
+export PYTHONPATH='/home/user/python_env/.flet/lib/python3.12/site-packages'
 source /opt/ros/jazzy/setup.bash
 source /home/user/ros/install/setup.bash
 exec "$@"
