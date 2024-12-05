@@ -1,6 +1,6 @@
-FROM eduartrobotik/eduart-robot:0.4.1
+FROM eduartrobotik/eduart-robot:0.5.0
 
-ENV USER user
+ENV USER=user
 ENV DEBIAN_FRONTEND=noninteractive
 
 # install mraa lib for UART communication in shield node
@@ -8,9 +8,15 @@ USER root
 RUN apt-get update \
     && apt-get install -y \
         python3-pip \
-    && pip3 install flet
+        python3.12-venv
 
 USER $USER
+RUN echo "Installing flet" \ 
+    && mkdir /home/$USER/python_env \
+    && cd /home/$USER/python_env \
+    && python3 -m venv .flet \
+    && source .flet/bin/activate \
+    && pip3 install flet
 
 # set up ros workspace
 RUN mkdir -p /home/$USER/ros/src/
@@ -19,10 +25,11 @@ WORKDIR /home/$USER/ros
 
 # build EduArt packages nodes
 RUN source /opt/ros/$ROS_DISTRO/setup.bash \
+    && source /home/$USER/python_env/.flet/bin/activate \
     && source /home/$USER/.bashrc \
-    && colcon build --symlink-install --executor sequential --event-handlers console_direct+ --cmake-args -DCMAKE_BUILD_TYPE=Release
+    && colcon build --symlink-install --event-handlers console_direct+ --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 # add entry point
 COPY --chown=$USER ./entrypoint /home/$USER/
-RUN sudo chmod a+x /home/$USER/entrypoint
+RUN chmod a+x /home/$USER/entrypoint
 ENTRYPOINT [ "/home/user/entrypoint" ]

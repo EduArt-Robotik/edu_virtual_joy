@@ -4,6 +4,9 @@ This package provides a web server that can be used to control the robot Eduard 
 
 ![](edu_virtual_joy/assets/images/edu-virtual-joy-web.png)
 
+|<img src='docs/warning.png' height='100' width='400'/>   |    Version 0.2.x of eduart_virtual_joy switches its ROS2 middleware from FastRTPS (the ROS2 default) to Cyclone DDS! This change is important because these two middlewares are not fully compatible. Therefore, if you update to version 0.2.x you have to make your sure that your whole ROS2 infrastructure uses the same middleware!    <br> <br>    If you wish to keep FastRTPS as your middleware, you can do this by simply editing a parameter file. Please refer to [this guide](https://github.com/EduArt-Robotik/edu_robot/blob/main/documentation/update/changing-middleware.md) (repository: edu_robot) on how to adjust the middleware settings for the docker containers and your system! |
+|---|----|
+
 ## Installation
 
 ### Docker Image
@@ -18,7 +21,7 @@ git clone https://github.com/EduArt-Robotik/edu_virtual_joy.git
 
 ### Native ROS2 Package
 
-As an alternative to the Docker image, there is an installation as a ROS2 package. This assumes that ROS2 is already installed. If this is not the case, please follow the [ROS Install Instructions](https://docs.ros.org/en/humble/Installation.html).
+As an alternative to the Docker image, there is an installation as a ROS2 package. This assumes that ROS2 is already installed. If this is not the case, please follow the [ROS Install Instructions](https://docs.ros.org/en/jazzy/Installation.html).
 
 Please also make sure that you have "git" installed. If not:
 
@@ -48,10 +51,10 @@ To build the packages you will need "colcon" install this as following:
 sudo apt install python3-colcon-common-extensions
 ```
 
-Also you need the humble diagnostic updater:
+Also you need the jazzy diagnostic updater:
 
 ```bash
-sudo apt install ros-humble-diagnostic-updater
+sudo apt install ros-jazzy-diagnostic-updater
 ```
 
 You can then install **flet** with the following command:

@@ -13,12 +13,11 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 def generate_launch_description():
   # Launch File Arguments
-  use_fleet_control = LaunchConfiguration('use_fleet_control')
-  use_fleet_control_arg = DeclareLaunchArgument('use_fleet_control', default_value='True')
-
   edu_robot_namespace = LaunchConfiguration('edu_robot_namespace')
-  edu_robot_namespace_arg = DeclareLaunchArgument('edu_robot_namespace', default_value='eduard')
-
+  edu_robot_namespace_arg = DeclareLaunchArgument(
+    'edu_robot_namespace', default_value=os.getenv('EDU_ROBOT_NAMESPACE', default='eduard')
+  )
+  
   # Bringing Up Server
   virtual_joy_server = Node(
     package='edu_virtual_joy',
@@ -31,7 +30,6 @@ def generate_launch_description():
   )
 
   return LaunchDescription([
-    use_fleet_control_arg,
     edu_robot_namespace_arg,
     virtual_joy_server
   ])

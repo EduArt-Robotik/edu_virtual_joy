@@ -2,8 +2,8 @@ version: "3.0"
 
 services:
     eduart-virtual-joy:
-        image: eduartrobotik/eduart-virtual-joy:0.1.0
-        container_name: eduart-virtual-joy-0.1.0
+        image: eduartrobotik/eduart-virtual-joy:0.2.0
+        container_name: eduart-virtual-joy-0.2.0
         user: root
         restart: always
         privileged: true
@@ -12,6 +12,8 @@ services:
         mem_limit: 300mb
         environment:
             - EDU_ROBOT_NAMESPACE=${EDU_ROBOT_NAMESPACE}
+            - RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION}
+            - CYCLONEDDS_URI=/home/user/ros/launch_content/cyclone_profile.xml  
         network_mode: "host"
         command: bash -c 'cd /home/user/ros/launch_content; ros2 launch server.launch.py'         
         # command: bash -c 'ros2 run edu_virtual_joy virtual_joy --ros-args -r __ns:=${EDU_ROBOT_NAMESPACE}'
