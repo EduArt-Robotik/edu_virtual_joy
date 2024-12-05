@@ -4,6 +4,9 @@ This package provides a web server that can be used to control the robot Eduard 
 
 ![](edu_virtual_joy/assets/images/edu-virtual-joy-web.png)
 
+|<img src='docs/warning.png' height='100' width='400'/>   |    Version 0.2.x of eduart_virtual_joy switches its ROS2 middleware from FastRTPS (the ROS2 default) to Cyclone DDS! This change is important because these two middlewares are not fully compatible. Therefore, if you update to version 0.2.x you have to make your sure that your whole ROS2 infrastructure uses the same middleware!    <br> <br>    If you wish to keep FastRTPS as your middleware, you can do this by simply editing a parameter file. Please refer to [this guide](https://github.com/EduArt-Robotik/edu_robot/blob/main/documentation/update/changing-middleware.md) (repository: edu_robot) on how to adjust the middleware settings for the docker containers and your system! |
+|---|----|
+
 ## Installation
 
 ### Docker Image
