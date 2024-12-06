@@ -13,6 +13,10 @@ class RangeSensorDisplay(ft.UserControl):
     self.text_size = 20
 
   def set_distance(self, distance : float):
+    if distance != distance:
+      # distance is nan
+      distance = 0.0
+
     self.distance = min(distance, self.max_distance)
     distance_scale = self.distance / self.max_distance
     path_height = self.height - self.text_size
