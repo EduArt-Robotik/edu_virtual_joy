@@ -16,8 +16,8 @@ RUN echo "Installing flet" \
     && cd /home/$USER/python_env \
     && python3 -m venv .flet \
     && source .flet/bin/activate \
-    && pip3 install flet setuptools \
-    && pip install 'flet[all]==0.25.1' --upgrade
+    && pip3 install flet setuptools pyyaml \
+    && pip3 install 'flet[all]==0.25.1' --upgrade
 
 # set up ros workspace
 RUN mkdir -p /home/$USER/ros/src/
