@@ -1,7 +1,7 @@
-image_name = eduart-virtual-joy:0.3.0
+image_name = eduart-virtual-joy:0.2.1
 
 download-sources:
-	git clone --branch 0.3.0 https://github.com/EduArt-Robotik/edu_virtual_joy.git
+	git clone --branch 0.2.1 https://github.com/EduArt-Robotik/edu_virtual_joy.git
 
 build-docker:
 	docker build -t $(image_name) .

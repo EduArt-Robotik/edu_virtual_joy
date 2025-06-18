@@ -2,8 +2,8 @@ version: "3.0"
 
 services:
     eduart-virtual-joy:
-        image: eduartrobotik/eduart-virtual-joy:0.3.0
-        container_name: eduart-virtual-joy-0.3.0
+        image: eduartrobotik/eduart-virtual-joy:0.2.1
+        container_name: eduart-virtual-joy-0.2.1
         user: root
         restart: always
         privileged: true
