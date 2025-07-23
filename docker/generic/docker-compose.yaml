@@ -1,5 +1,3 @@
-version: "3.0"
-
 services:
     eduart-virtual-joy:
         image: eduartrobotik/eduart-virtual-joy:0.3.0
